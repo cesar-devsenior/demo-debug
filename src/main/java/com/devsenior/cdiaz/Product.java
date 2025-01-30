@@ -26,4 +26,9 @@ public class Product {
     public Double getPrice() {
         return price;
     }
+
+    // Agregando este metodo para obtener el precio promedio
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 }

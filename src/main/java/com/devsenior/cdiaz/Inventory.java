@@ -12,16 +12,29 @@ public class Inventory {
     }
 
     public void addProduct(Product product) {
-        products.add(product);
+        try {
+            var currentProduct = getProductByName(product.getName());
+
+            var newQuantity = currentProduct.getStock() + product.getStock();
+            var newPrice = (currentProduct.getStock() * currentProduct.getPrice()
+                    + product.getStock() * product.getPrice()) / newQuantity;
+
+            currentProduct.setStock(newQuantity);
+            // El precio no puede ser cambiado
+            currentProduct.setPrice(newPrice);
+        } catch (NotFoundException e) {
+            products.add(product);
+        }
     }
 
-    public void sellProduct(String name, Integer quantity) {
+    public void sellProduct(String name, Integer quantity) throws NotFoundException {
         // Producto existe
         var product = getProductByName(name);
 
         // Hay cantidad suficiente
         if (product.getStock() < quantity) {
             // No hay cantidad suficiente
+            throw new NotEnoughQuantityException("El producto '" + name + "' no tiene cantidad suficiente");
         }
 
         product.setStock(product.getStock() - quantity);
@@ -37,13 +50,13 @@ public class Inventory {
         return total;
     }
 
-    private Product getProductByName(String name) {
+    private Product getProductByName(String name) throws NotFoundException {
         for (var product : products) {
-            if(name.equals(product.getName())){
+            if (name.equalsIgnoreCase(product.getName())) {
                 return product;
             }
         }
-        return null;
+        throw new NotFoundException("Producto '" + name + "' existe en el inventario");
     }
 
 }
